@@ -1,269 +1,627 @@
 from pathlib import Path
 import json
-import re
 import zipfile
+import re
 import xml.etree.ElementTree as ET
-from html import unescape
+
+
+# ============================================================
+# 基础路径
+# ============================================================
 
 ROOT = Path(__file__).resolve().parents[1]
+
 DATA_DIR = ROOT / "data"
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR.mkdir(exist_ok=True)
+
 OUTPUT = DATA_DIR / "checky-data.json"
 
+
+# ============================================================
+# 四本资料
+# 文件名必须与仓库中的 DOCX 完全一致
+# ============================================================
+
 BOOKS = [
-    ("history", "建筑历史", "01-《秋季必背册子·建筑历史》.docx"),
-    ("urban", "城市设计", "02-《秋季必背册子·城市设计》.docx"),
-    ("physics", "建筑物理", "03-《秋季必背册子·建筑物理》.docx"),
-    ("structure", "构造技术", "04-《秋季必背册子·构造技术》.docx"),
+    (
+        "history",
+        "建筑历史",
+        "01-《秋季必背册子·建筑历史》.docx"
+    ),
+    (
+        "urban",
+        "城市设计",
+        "02-《秋季必背册子·城市设计》.docx"
+    ),
+    (
+        "physics",
+        "建筑物理",
+        "03-《秋季必背册子·建筑物理》.docx"
+    ),
+    (
+        "construction",
+        "构造技术",
+        "04-《秋季必背册子·构造技术》.docx"
+    ),
 ]
 
-W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-NS = {"w": W_NS}
 
-def clean_text(s):
-    s = unescape(s or "")
-    s = s.replace("\u00a0"," ").replace("\u200b","").replace("\ufeff","")
-    s = s.replace("\r\n","\n").replace("\r","\n")
-    s = re.sub(r"[ \t]+"," ",s)
-    return "\n".join(x.strip() for x in s.split("\n") if x.strip()).strip()
+# ============================================================
+# 读取 DOCX
+#
+# 重要：
+# DOCX 本质上是 ZIP。
+#
+# 之前的问题是：
+# word/media/image21.png
+# 出现 CRC 错误。
+#
+# 所以这里完全不读取图片。
+# 只读取：
+#
+# word/document.xml
+#
+# 这样不会再因为图片损坏导致整个构建失败。
+# ============================================================
 
-def read_docx_text(path):
-    with zipfile.ZipFile(path, "r") as z:
-        if "word/document.xml" not in z.namelist():
-            raise RuntimeError(f"{path.name} 缺少 word/document.xml")
-        # 关键：只读取文字 XML，不碰 word/media/*，绕过损坏图片 CRC
-        xml = z.read("word/document.xml")
-    root = ET.fromstring(xml)
-    out = []
-    for p in root.findall(".//w:p", NS):
-        parts = []
-        for n in p.iter():
-            if n.tag == f"{{{W_NS}}}t" and n.text:
-                parts.append(n.text)
-            elif n.tag == f"{{{W_NS}}}tab":
-                parts.append(" ")
-            elif n.tag in (f"{{{W_NS}}}br", f"{{{W_NS}}}cr"):
-                parts.append("\n")
-        s = clean_text("".join(parts))
-        if s:
-            out.append(s)
-    return out
+def read_docx_paragraphs(path):
 
-def is_noise(s):
-    return not s or re.fullmatch(r"\d+", s) or re.fullmatch(r"[-—_~·•●○◆◇■□*]+", s)
+    with zipfile.ZipFile(path, "r") as archive:
 
-def is_heading(s):
-    if not s or len(s) > 80:
-        return False
-    patterns = [
-        r"^第[一二三四五六七八九十百千万0-9]+[章节篇部分]",
-        r"^[一二三四五六七八九十百千万]+[、.．]",
-        r"^[0-9]+[、.．]",
-        r"^[0-9]+\.[0-9]+",
-        r"^[（(][一二三四五六七八九十百千万]+[）)]",
-    ]
-    return any(re.match(p, s) for p in patterns)
+        xml_data = archive.read(
+            "word/document.xml"
+        )
 
-def split_text(s, limit=220):
-    s = clean_text(s)
-    if len(s) <= limit:
-        return [s] if s else []
-    pieces = re.split(r"(?<=[。！？；])", s)
-    result, cur = [], ""
-    for p in pieces:
-        p = p.strip()
-        if not p:
-            continue
-        if len(cur) + len(p) <= limit:
-            cur += p
-        else:
-            if cur:
-                result.append(cur)
-            if len(p) <= limit:
-                cur = p
-            else:
-                for i in range(0, len(p), limit):
-                    result.append(p[i:i+limit])
-                cur = ""
-    if cur:
-        result.append(cur)
-    return result
+    root = ET.fromstring(xml_data)
 
-def make_question(book_id, subject, chapter_id, chapter_name, n, text):
-    return {
-        "id": f"{book_id}-q-{n}",
-        "subject": book_id,
-        "subjectName": subject,
-        "chapter": chapter_id,
-        "chapterId": chapter_id,
-        "chapterName": chapter_name,
-        "type": "recall",
-        "question": text,
-        "answer": text,
-        "content": text,
+    namespace = {
+        "w":
+        "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
     }
 
-def parse_book(book_id, subject, filename):
-    path = ROOT / filename
-    if not path.exists():
-        raise FileNotFoundError(f"找不到：{filename}")
+    paragraphs = []
 
-    raw = [x for x in read_docx_text(path) if not is_noise(x)]
-    numbered_headings = [x for x in raw if is_heading(x)]
+    for paragraph in root.findall(
+        ".//w:p",
+        namespace
+    ):
 
-    # 如果一本书没有可靠章节标题，也绝不生成“0题目”。
-    # 自动建立一个“全文内容”章节，把所有正文纳入题库。
-    chapters, questions = [], []
-    current = None
-    qn = 0
-    cn = 0
+        texts = []
 
-    for line in raw:
-        if is_heading(line):
-            cn += 1
-            current = {
-                "id": f"{book_id}-chapter-{cn}",
-                "name": line,
-                "title": line,
-                "subject": book_id,
-                "subjectName": subject,
-                "questions": [],
-                "questionIds": [],
-            }
-            chapters.append(current)
-            continue
+        for text_node in paragraph.findall(
+            ".//w:t",
+            namespace
+        ):
 
-        if current is None:
-            cn += 1
-            current = {
-                "id": f"{book_id}-chapter-{cn}",
-                "name": "全文内容",
-                "title": "全文内容",
-                "subject": book_id,
-                "subjectName": subject,
-                "questions": [],
-                "questionIds": [],
-            }
-            chapters.append(current)
-
-        for piece in split_text(line):
-            qn += 1
-            q = make_question(
-                book_id, subject, current["id"], current["name"], qn, piece
-            )
-            current["questions"].append(q)
-            current["questionIds"].append(q["id"])
-            questions.append(q)
-
-    # 极端情况下仍然保证至少有一个章节
-    if not questions and raw:
-        cn += 1
-        current = {
-            "id": f"{book_id}-chapter-fallback",
-            "name": "全文内容",
-            "title": "全文内容",
-            "subject": book_id,
-            "subjectName": subject,
-            "questions": [],
-            "questionIds": [],
-        }
-        chapters = [current]
-        for line in raw:
-            for piece in split_text(line):
-                qn += 1
-                q = make_question(
-                    book_id, subject, current["id"], current["name"], qn, piece
+            if text_node.text:
+                texts.append(
+                    text_node.text
                 )
-                current["questions"].append(q)
-                current["questionIds"].append(q["id"])
-                questions.append(q)
 
-    for c in chapters:
-        c["count"] = len(c["questions"])
-        c["questionCount"] = len(c["questions"])
+        text = "".join(texts)
 
-    print(f"{subject}: 段落={len(raw)} 章节={len(chapters)} 题目={len(questions)}")
-    return {
-        "id": book_id,
-        "subject": book_id,
-        "subjectName": subject,
-        "name": subject,
-        "title": subject,
-        "source": filename,
-        "chapters": chapters,
-        "questions": questions,
-        "count": len(questions),
-        "questionCount": len(questions),
-    }
+        # 清理多余空格
+        text = re.sub(
+            r"\s+",
+            " ",
+            text
+        ).strip()
 
-def dedupe(items):
-    seen, out = set(), []
-    for q in items:
-        k = (q.get("subject"), q.get("chapter"), q.get("question"))
-        if k not in seen:
-            seen.add(k)
-            out.append(q)
-    return out
+        if text:
+            paragraphs.append(text)
 
-def main():
-    books, all_questions, all_chapters = [], [], []
+    return paragraphs
 
-    for spec in BOOKS:
-        try:
-            book = parse_book(*spec)
-        except Exception as e:
-            print(f"[ERROR] {spec[1]}: {e}")
-            book = {
-                "id": spec[0],
-                "subject": spec[0],
-                "subjectName": spec[1],
-                "name": spec[1],
-                "title": spec[1],
-                "source": spec[2],
-                "chapters": [],
-                "questions": [],
-                "count": 0,
-                "questionCount": 0,
-                "error": str(e),
+
+# ============================================================
+# 判断是不是章节标题
+# ============================================================
+
+def is_heading(text):
+
+    text = text.strip()
+
+    if len(text) < 2:
+        return False
+
+    if len(text) > 100:
+        return False
+
+
+    patterns = [
+
+        # 第 一章 / 第1章 / 第一节
+        r"^第[一二三四五六七八九十百千万0-9]+[章节篇]",
+
+        # 一、二、三、
+        r"^[一二三四五六七八九十百千万]+[、.．]",
+
+        # 1. / 1、 / 1.2 / 1.2.3
+        r"^\d+([.、．]\d+)*[、.．]?\s*\S+",
+
+        # 常见章节标题
+        r"^(绪论|概述|目录|附录|总结)",
+
+        # 第一部分
+        r"^第[一二三四五六七八九十]+部分",
+
+        # 第一篇
+        r"^第[一二三四五六七八九十]+篇",
+
+    ]
+
+
+    for pattern in patterns:
+
+        if re.match(
+            pattern,
+            text
+        ):
+            return True
+
+
+    return False
+
+
+# ============================================================
+# 从正文生成主动回忆题
+#
+# 这里不是简单显示正文。
+#
+# 每一段内容都会成为一个可点击的主动回忆题。
+# ============================================================
+
+def make_questions(
+    lines,
+    subject_name,
+    chapter_name,
+    chapter_id
+):
+
+    questions = []
+
+
+    for line in lines:
+
+        line = line.strip()
+
+        if len(line) < 10:
+            continue
+
+
+        # 太长的段落拆开
+        if len(line) > 450:
+
+            pieces = re.split(
+                r"[。！？；]",
+                line
+            )
+
+            pieces = [
+                p.strip()
+                for p in pieces
+                if len(p.strip()) >= 18
+            ]
+
+        else:
+
+            pieces = [line]
+
+
+        for piece in pieces:
+
+            piece = piece.strip()
+
+            if len(piece) < 10:
+                continue
+
+
+            question_number = (
+                len(questions) + 1
+            )
+
+
+            question_id = (
+                f"{chapter_id}-q{question_number}"
+            )
+
+
+            # 提取一些中文关键词
+            keyword_list = re.findall(
+                r"[\u4e00-\u9fff]{2,8}",
+                piece
+            )
+
+
+            keywords = "；".join(
+                keyword_list[:10]
+            )
+
+
+            question = {
+
+                "id":
+                    question_id,
+
+                "subject":
+                    subject_name,
+
+                "subjectName":
+                    subject_name,
+
+                "chapter":
+                    chapter_name,
+
+                "chapterId":
+                    chapter_id,
+
+                "chapterName":
+                    chapter_name,
+
+                "type":
+                    "recall",
+
+                "question":
+                    "请主动回忆并说明：" +
+                    piece[:120],
+
+                "answer":
+                    piece,
+
+                "content":
+                    piece,
+
+                "keyword":
+                    keywords
+
             }
-        books.append(book)
-        all_chapters.extend(book["chapters"])
-        all_questions.extend(book["questions"])
 
-    all_questions = dedupe(all_questions)
 
-    # 重新建立每个章节的题目引用，保证前端点击章节一定能找到题目
-    qmap = {q["id"]: q for q in all_questions}
-    for book in books:
-        for c in book["chapters"]:
-            c["questionIds"] = [i for i in c.get("questionIds", []) if i in qmap]
-            c["questions"] = [qmap[i] for i in c["questionIds"]]
-            c["count"] = len(c["questions"])
-            c["questionCount"] = len(c["questions"])
+            questions.append(
+                question
+            )
 
-    data = {
-        "version": "3.0",
-        "generated": True,
-        "books": books,
-        "subjects": books,
-        "chapters": all_chapters,
-        "questions": all_questions,
-        "stats": {
-            "bookCount": len(books),
-            "chapterCount": len(all_chapters),
-            "questionCount": len(all_questions),
-        },
+
+            # 防止极端情况下生成过多数据
+            if len(questions) >= 3000:
+
+                return questions
+
+
+    return questions
+
+
+# ============================================================
+# 主程序
+# ============================================================
+
+all_books = []
+
+all_chapters = []
+
+all_questions = []
+
+
+for (
+    book_id,
+    book_name,
+    filename
+) in BOOKS:
+
+
+    file_path =
+        ROOT / filename
+
+
+    if not file_path.exists():
+
+        print(
+            "找不到文件：",
+            filename
+        )
+
+        continue
+
+
+    print()
+    print(
+        "正在读取：",
+        book_name
+    )
+
+
+    # --------------------------------------------------------
+    # 读取正文
+    # --------------------------------------------------------
+
+    paragraphs = read_docx_paragraphs(
+        file_path
+    )
+
+
+    print(
+        "读取到段落：",
+        len(paragraphs)
+    )
+
+
+    # --------------------------------------------------------
+    # 根据标题切分章节
+    # --------------------------------------------------------
+
+    chapter_groups = []
+
+    current_chapter = None
+
+
+    for paragraph in paragraphs:
+
+
+        if is_heading(
+            paragraph
+        ):
+
+            current_chapter = {
+
+                "name":
+                    paragraph,
+
+                "lines":
+                    []
+
+            }
+
+            chapter_groups.append(
+                current_chapter
+            )
+
+
+        else:
+
+            if current_chapter is not None:
+
+                current_chapter[
+                    "lines"
+                ].append(
+                    paragraph
+                )
+
+
+    # --------------------------------------------------------
+    # 如果没有识别出任何章节
+    #
+    # 不允许变成 0。
+    #
+    # 整本书至少建立一个“全文内容”章节。
+    # --------------------------------------------------------
+
+    if not chapter_groups:
+
+        chapter_groups = [
+
+            {
+                "name":
+                    "全文内容",
+
+                "lines":
+                    paragraphs
+            }
+
+        ]
+
+
+    # --------------------------------------------------------
+    # 建立书籍对象
+    # --------------------------------------------------------
+
+    book = {
+
+        "id":
+            book_id,
+
+        "name":
+            book_name,
+
+        "title":
+            book_name,
+
+        "chapters":
+            []
+
     }
 
-    with OUTPUT.open("w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print("=" * 60)
-    print("CHECKY BUILD SUCCESS")
-    print(f"章节：{len(all_chapters)}")
-    print(f"题目：{len(all_questions)}")
-    print(f"输出：{OUTPUT}")
-    print("=" * 60)
+    # --------------------------------------------------------
+    # 建立章节
+    # --------------------------------------------------------
 
-if __name__ == "__main__":
-    main()
+    for index, group in enumerate(
+        chapter_groups,
+        start=1
+    ):
+
+
+        chapter_id = (
+            f"{book_id}-c{index}"
+        )
+
+
+        chapter_name = (
+            group["name"]
+        )
+
+
+        # ----------------------------------------------------
+        # 生成题目
+        # ----------------------------------------------------
+
+        questions = make_questions(
+
+            group["lines"],
+
+            book_name,
+
+            chapter_name,
+
+            chapter_id
+
+        )
+
+
+        # ----------------------------------------------------
+        # 如果章节正文太少
+        #
+        # 也保留章节。
+        # ----------------------------------------------------
+
+        chapter = {
+
+            "id":
+                chapter_id,
+
+            "bookId":
+                book_id,
+
+            "subjectId":
+                book_id,
+
+            "name":
+                chapter_name,
+
+            "title":
+                chapter_name,
+
+            "questionIds":
+                [
+                    q["id"]
+                    for q in questions
+                ],
+
+            "questions":
+                questions,
+
+            "count":
+                len(questions),
+
+            "questionCount":
+                len(questions)
+
+        }
+
+
+        book["chapters"].append(
+            chapter
+        )
+
+        all_chapters.append(
+            chapter
+        )
+
+        all_questions.extend(
+            questions
+        )
+
+
+    all_books.append(
+        book
+    )
+
+
+    print(
+        book_name,
+        "章节：",
+        len(book["chapters"]),
+        "题目：",
+        sum(
+            len(c["questions"])
+            for c in book["chapters"]
+        )
+    )
+
+
+# ============================================================
+# 最终 JSON
+# ============================================================
+
+result = {
+
+    "version":
+        "2.0",
+
+    "books":
+        all_books,
+
+    "subjects":
+        all_books,
+
+    "chapters":
+        all_chapters,
+
+    "questions":
+        all_questions,
+
+    "stats": {
+
+        "books":
+            len(all_books),
+
+        "chapters":
+            len(all_chapters),
+
+        "questions":
+            len(all_questions)
+
+    }
+
+}
+
+
+# ============================================================
+# 写入文件
+# ============================================================
+
+OUTPUT.write_text(
+
+    json.dumps(
+        result,
+        ensure_ascii=False,
+        indent=2
+    ),
+
+    encoding="utf-8"
+
+)
+
+
+print()
+print(
+    "======================================"
+)
+
+print(
+    "CHECKY 数据生成完成"
+)
+
+print(
+    "书籍：",
+    len(all_books)
+)
+
+print(
+    "章节：",
+    len(all_chapters)
+)
+
+print(
+    "题目：",
+    len(all_questions)
+)
+
+print(
+    "输出：",
+    OUTPUT
+)
+
+print(
+    "======================================"
+)
