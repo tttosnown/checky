@@ -3,246 +3,1231 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f3ee">
-<title>CHECKY · 主动回忆</title>
+<title>CHECKY · 背书</title>
+
 <style>
-:root{--bg:#f7f3ee;--card:#fffdf9;--ink:#242321;--muted:#8b8780;--line:#e9e3db;--accent:#7d6b5b;--soft:#eee8df}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif}
-button{font:inherit;border:0;cursor:pointer}
-.app{max-width:760px;margin:auto;min-height:100vh;padding:24px 18px 100px}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
-.brand{font-size:27px;font-weight:800;letter-spacing:.02em}.sub{font-size:12px;color:var(--muted);margin-top:3px}
-.iconbtn{width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
-.hero{background:var(--card);border:1px solid var(--line);border-radius:25px;padding:24px;margin-bottom:18px}
-.hero h1{margin:0 0 7px;font-size:28px}.hero p{margin:0;color:var(--muted);line-height:1.7}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
-.stat{background:var(--soft);border-radius:18px;padding:16px}.stat b{font-size:24px}.stat span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
-.section-title{font-size:15px;font-weight:800;margin:25px 2px 10px}
-.book{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);padding:17px;border-radius:20px;margin:10px 0;text-align:left;width:100%}
-.book .emoji{font-size:26px}.book strong{font-size:16px}.book small{display:block;color:var(--muted);margin-top:4px}
-.hidden{display:none}
-.back{background:none;color:var(--muted);padding:4px 0;margin-bottom:12px}
-.crumb{color:var(--muted);font-size:13px}
-.chapter{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:9px 0}
-.chapter button{background:none;width:100%;text-align:left}.chapter-title{font-weight:750}.chapter-meta{font-size:12px;color:var(--muted);margin-top:5px}
-.progress{height:6px;background:#e8e2da;border-radius:99px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;background:#7d6b5b;width:0}
-.study{text-align:center}.study h2{font-size:27px;margin:16px 0 8px}.hint{color:var(--muted);font-size:13px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;margin-top:18px;text-align:left;overflow:hidden}
-.panel-head{padding:16px 18px;font-weight:750;display:flex;justify-content:space-between}
-.panel-body{padding:0 18px 18px;line-height:1.9;white-space:pre-wrap}
-.reveal{margin-top:14px;width:100%;padding:13px;border-radius:15px;background:var(--soft);color:var(--ink)}
-.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
-.score{padding:15px 8px;border-radius:17px;background:var(--card);border:1px solid var(--line);font-weight:750}
-.score small{display:block;color:var(--muted);font-weight:400;margin-top:3px}
-.empty{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;text-align:center;color:var(--muted);line-height:1.7}
-.notice{padding:13px 15px;background:#fff8e8;border:1px solid #eadfbe;border-radius:15px;color:#6e6042;font-size:12px;line-height:1.6;margin-top:14px}
-.close{position:absolute;right:14px;top:12px;width:38px;height:38px;border-radius:12px;background:var(--soft);font-size:22px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;padding:0;z-index:20}
-.modal.hidden{display:none}
-.modal-card{position:relative;width:min(760px,100%);max-height:92vh;overflow:auto;background:var(--bg);border-radius:26px 26px 0 0;padding:24px 18px 30px}
-.modal-card h2{margin:0 45px 6px 0}.modal-card .muted{color:var(--muted);font-size:13px}
-.item-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0}
-.item-title{font-weight:750;margin-bottom:8px}.item-text{line-height:1.8;white-space:pre-wrap}
-.item-btn{width:100%;text-align:left;background:none}
-.top-actions{display:flex;gap:10px;margin:10px 0}.top-actions button{padding:10px 14px;border-radius:13px;background:var(--soft)}
-@media(max-width:520px){.hero h1{font-size:24px}.scores{gap:7px}.score{font-size:13px}}
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#f6f5f2;
+  color:#171717;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
+}
+
+button{
+  font:inherit;
+}
+
+#app{
+  max-width:900px;
+  margin:auto;
+  padding:20px 15px 45px;
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.back{
+  display:none;
+  border:0;
+  background:#111;
+  color:white;
+  border-radius:12px;
+  padding:9px 13px;
+}
+
+.title{
+  font-size:25px;
+  font-weight:800;
+}
+
+.sub{
+  font-size:13px;
+  color:#777;
+  margin-top:3px;
+}
+
+/* 首页四大板块 */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.card{
+  width:100%;
+  border:0;
+  background:white;
+  cursor:pointer;
+  text-align:left;
+  box-shadow:0 3px 15px #0000000b;
+  border-radius:18px;
+  padding:20px;
+  min-height:125px;
+}
+
+.card:active{
+  transform:scale(.985);
+}
+
+.card h2{
+  margin:0 0 9px;
+  font-size:20px;
+}
+
+.count{
+  font-size:13px;
+  color:#777;
+}
+
+.arrow{
+  float:right;
+  font-size:24px;
+}
+
+/* 列表 */
+
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.row{
+  width:100%;
+  border:0;
+  background:white;
+  cursor:pointer;
+  text-align:left;
+  box-shadow:0 3px 15px #0000000b;
+  border-radius:15px;
+  padding:16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.row:active{
+  transform:scale(.99);
+}
+
+.row strong{
+  font-size:16px;
+}
+
+.row small{
+  color:#888;
+  line-height:1.5;
+}
+
+/* 空状态 */
+
+.empty{
+  background:white;
+  border-radius:16px;
+  padding:22px;
+  color:#777;
+  line-height:1.8;
+}
+
+/* 题目页面 */
+
+.study{
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 3px 18px #0000000b;
+}
+
+.crumb,
+.qno{
+  font-size:13px;
+  color:#888;
+}
+
+.question{
+  font-size:22px;
+  font-weight:750;
+  line-height:1.6;
+  margin:12px 0 20px;
+  white-space:pre-wrap;
+}
+
+/* 操作按钮 */
+
+.actions,
+.score,
+.nav{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+.actions button,
+.nav button{
+  border:0;
+  border-radius:12px;
+  background:#111;
+  color:white;
+  padding:11px 15px;
+  cursor:pointer;
+}
+
+.actions .alt,
+.nav .alt{
+  background:#eee;
+  color:#222;
+}
+
+/* 答案 */
+
+.panel{
+  margin-top:12px;
+  padding:14px;
+  border-radius:14px;
+  line-height:1.7;
+  white-space:pre-wrap;
+}
+
+.keyword{
+  background:#fff3cf;
+}
+
+.answer{
+  background:#edf7ee;
+}
+
+/* 熟练度 */
+
+.score{
+  margin-top:14px;
+}
+
+.score button{
+  flex:1;
+  border:1px solid #ddd;
+  background:white;
+  border-radius:12px;
+  padding:10px;
+  cursor:pointer;
+}
+
+.score .active{
+  background:#111;
+  color:white;
+}
+
+/* 上下一题 */
+
+.nav{
+  margin-top:18px;
+}
+
+.nav button{
+  flex:1;
+}
+
+/* 手机 */
+
+@media(max-width:600px){
+
+  #app{
+    padding:17px 13px 40px;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    min-height:105px;
+  }
+
+  .question{
+    font-size:20px;
+  }
+}
 </style>
 </head>
+
+
 <body>
-<div class="app">
-<header>
-  <div><div class="brand">CHECKY</div><div class="sub">主动回忆 · 关键词提示 · 掌握追踪</div></div>
-  <button class="iconbtn" onclick="resetData()">↺</button>
-</header>
 
-<section id="home">
-  <div class="hero">
-    <h1>今天，先想起来。</h1>
-    <p>合上书 → 先复述 → 看关键词 → 必要时展开原文 → 最后给自己 1 / 2 / 3 分。</p>
-    <div class="grid">
-      <div class="stat"><b id="todayCount">0</b><span>累计完成回忆</span></div>
-      <div class="stat"><b id="mastery">—</b><span>平均掌握</span></div>
-    </div>
-  </div>
-  <div class="section-title">学习资料</div>
-  <div id="books"></div>
-  <div class="notice">题库由 GitHub Actions 自动读取 DOCX 的文字内容生成。损坏的图片不会影响文字题库。</div>
-</section>
+<div id="app"></div>
 
-<section id="list" class="hidden">
-  <button class="back" onclick="goHome()">‹ 返回资料</button>
-  <div class="crumb" id="listCrumb"></div>
-  <h1 id="listTitle"></h1>
-  <div id="chapters"></div>
-</section>
-
-<section id="study" class="hidden study">
-  <button class="back" onclick="goChapterList()">‹ 返回章节</button>
-  <div class="crumb" id="studyCrumb"></div>
-  <h2 id="studyTitle"></h2>
-  <div class="hint">这一章共有 <span id="studyCount">0</span> 个回忆点</div>
-  <div class="top-actions">
-    <button onclick="prevItem()">← 上一个</button>
-    <button onclick="showKeywords()">关键词</button>
-    <button onclick="showOriginal()">原文</button>
-    <button onclick="nextItem()">下一个 →</button>
-  </div>
-  <div id="itemBox" class="item-card"></div>
-  <div class="scores">
-    <button class="score" onclick="score(1)">1 分<small>基本不会</small></button>
-    <button class="score" onclick="score(2)">2 分<small>有印象 / 需提示</small></button>
-    <button class="score" onclick="score(3)">3 分<small>基本完整</small></button>
-  </div>
-</section>
-</div>
-
-<div id="chapterModal" class="modal hidden" onclick="if(event.target===this)closeChapterModal()">
-  <div class="modal-card">
-    <button class="close" onclick="closeChapterModal()">×</button>
-    <h2 id="modalTitle"></h2>
-    <div class="muted" id="modalMeta"></div>
-    <div id="modalItems"></div>
-  </div>
-</div>
 
 <script>
-const DATA_URL='./data/checky-data.json';
-const STORAGE='checky-v2-scores';
-let DATA={subjects:[],books:[],questions:[],chapters:[]};
-let currentBook=null,currentChapter=null,currentIndex=0;
-let scores=JSON.parse(localStorage.getItem(STORAGE)||'{}');
 
-function $(id){return document.getElementById(id)}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function save(){localStorage.setItem(STORAGE,JSON.stringify(scores))}
-function qText(q){return q?.question||q?.content||q?.text||q?.answer||''}
-function qAnswer(q){return q?.answer||q?.content||q?.text||qText(q)}
-function bookList(){return DATA.books?.length?DATA.books:(DATA.subjects||[])}
-function chaptersOf(book){
-  if(Array.isArray(book?.chapters)) return book.chapters;
-  const all=DATA.chapters||[];
-  return all.filter(c=>c.subject===book.id||c.subjectId===book.id);
+/* =========================================================
+   CHECKY 数据与页面状态
+========================================================= */
+
+let DATA = null;
+
+let state = {
+  page:"home",
+  book:null,
+  chapter:null,
+  questions:[],
+  index:0
+};
+
+const app = document.getElementById("app");
+
+
+/* =========================================================
+   数据读取
+========================================================= */
+
+function books(){
+
+  if(Array.isArray(DATA?.books)){
+    return DATA.books;
+  }
+
+  if(Array.isArray(DATA?.subjects)){
+    return DATA.subjects;
+  }
+
+  return [];
 }
-function questionsOf(chapter){
-  if(Array.isArray(chapter?.questions)&&chapter.questions.length) return chapter.questions;
-  const ids=new Set(chapter?.questionIds||[]);
-  if(ids.size) return (DATA.questions||[]).filter(q=>ids.has(q.id));
-  return (DATA.questions||[]).filter(q=>
-    q.chapter===chapter.id ||
-    q.chapterId===chapter.id ||
-    q.chapterName===chapter.name ||
-    q.chapterName===chapter.title
+
+
+function bookName(book){
+
+  return (
+    book?.name ||
+    book?.title ||
+    book?.subjectName ||
+    book?.subject ||
+    "未命名板块"
   );
 }
-function idFor(q){return String(q?.id||q?.question||q?.content||Math.random())}
-function renderBooks(){
-  const books=bookList();
-  $('books').innerHTML=books.length?books.map((b,i)=>{
-    const cs=chaptersOf(b), qs=cs.flatMap(questionsOf);
-    const emoji=['📕','📗','📘','📙','📒'][i%5];
-    return `<button class="book" onclick="openBook('${esc(b.id)}')">
-      <div class="emoji">${emoji}</div>
-      <div><strong>${esc(b.name||b.subjectName||b.title||'学习资料')}</strong>
-      <small>${cs.length} 个章节 · ${qs.length} 个回忆点</small></div>
-    </button>`;
-  }).join(''):'<div class="empty">正在读取题库……</div>';
+
+
+function chapters(book){
+
+  /* 优先读取书自己携带的 chapters */
+
+  if(Array.isArray(book?.chapters)){
+    return book.chapters;
+  }
+
+  /* 如果章节放在全局 chapters 中 */
+
+  const id =
+    book?.id ||
+    book?.bookId ||
+    book?.subjectId;
+
+  if(Array.isArray(DATA?.chapters)){
+
+    return DATA.chapters.filter(chapter => {
+
+      return (
+        chapter.bookId == id ||
+        chapter.subjectId == id ||
+        chapter.parentId == id
+      );
+
+    });
+  }
+
+  return [];
 }
-function openBook(id){
-  currentBook=bookList().find(b=>String(b.id)===String(id));
-  if(!currentBook)return;
-  $('home').classList.add('hidden');$('study').classList.add('hidden');$('list').classList.remove('hidden');
-  $('listCrumb').textContent=currentBook.name||currentBook.subjectName||currentBook.title||'资料';
-  $('listTitle').textContent=currentBook.name||currentBook.subjectName||currentBook.title||'章节';
-  renderChapters();
+
+
+function chapterName(chapter){
+
+  return (
+    chapter?.name ||
+    chapter?.title ||
+    chapter?.chapterName ||
+    "未命名章节"
+  );
 }
-function renderChapters(){
-  const cs=chaptersOf(currentBook);
-  $('chapters').innerHTML=cs.length?cs.map((c,i)=>{
-    const qs=questionsOf(c);
-    const done=qs.filter(q=>scores[idFor(q)]).length;
-    const pct=qs.length?Math.round(done/qs.length*100):0;
-    return `<div class="chapter">
-      <button onclick="openChapter(${i})">
-        <div class="chapter-title">${esc(c.name||c.title||('第 '+(i+1)+' 章'))}</div>
-        <div class="chapter-meta">${qs.length} 个回忆点 · 已完成 ${done} 个</div>
-        <div class="progress"><i style="width:${pct}%"></i></div>
+
+
+function chapterId(chapter){
+
+  return (
+    chapter?.id ||
+    chapter?.chapterId ||
+    chapter?._id
+  );
+}
+
+
+/* =========================================================
+   获取章节题目
+========================================================= */
+
+function questions(chapter){
+
+  /* 第一种：章节直接带 questions */
+
+  if(Array.isArray(chapter?.questions)){
+    return chapter.questions;
+  }
+
+
+  /* 第二种：questionList */
+
+  if(Array.isArray(chapter?.questionList)){
+    return chapter.questionList;
+  }
+
+
+  /* 第三种：章节只有 questionIds */
+
+  const ids = chapter?.questionIds || [];
+
+  if(
+    ids.length &&
+    Array.isArray(DATA?.questions)
+  ){
+
+    return ids
+      .map(id => {
+
+        return DATA.questions.find(q => {
+
+          return (
+            q.id == id ||
+            q.questionId == id
+          );
+
+        });
+
+      })
+      .filter(Boolean);
+  }
+
+
+  /* 第四种：从全局 questions 根据 chapterId 查 */
+
+  const id = chapterId(chapter);
+  const name = chapterName(chapter);
+
+  if(Array.isArray(DATA?.questions)){
+
+    return DATA.questions.filter(q => {
+
+      return (
+        q.chapterId == id ||
+        q.chapter == id ||
+        q.chapterName == name ||
+        q.chapter == name
+      );
+
+    });
+
+  }
+
+  return [];
+}
+
+
+/* =========================================================
+   题目字段兼容
+========================================================= */
+
+function questionText(q){
+
+  return (
+    q?.question ||
+    q?.prompt ||
+    q?.title ||
+    q?.text ||
+    q?.content ||
+    "（题目为空）"
+  );
+}
+
+
+function answerText(q){
+
+  return (
+    q?.answer ||
+    q?.original ||
+    q?.explanation ||
+    q?.content ||
+    "暂无答案"
+  );
+}
+
+
+function keywordText(q){
+
+  return (
+    q?.keyword ||
+    q?.keywords ||
+    q?.points ||
+    ""
+  );
+}
+
+
+/* =========================================================
+   HTML 转义
+========================================================= */
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/[&<>"]/g, char => {
+
+      return {
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;"
+      }[char];
+
+    });
+}
+
+
+/* =========================================================
+   统计
+========================================================= */
+
+function totalQuestions(book){
+
+  return chapters(book)
+    .reduce(
+      (total, chapter) =>
+        total + questions(chapter).length,
+      0
+    );
+}
+
+
+/* =========================================================
+   顶部
+========================================================= */
+
+function header(title, subtitle){
+
+  return `
+    <div class="top">
+
+      <button
+        id="back"
+        class="back"
+        onclick="goBack()"
+      >
+        ← 返回
       </button>
-    </div>`;
-  }).join(''):'<div class="empty">这个资料暂时没有可用章节。</div>';
+
+      <div>
+
+        <div class="title">
+          ${escapeHTML(title)}
+        </div>
+
+        <div class="sub">
+          ${escapeHTML(subtitle || "")}
+        </div>
+
+      </div>
+
+    </div>
+  `;
 }
-function openChapter(index){
-  const cs=chaptersOf(currentBook);
-  currentChapter=cs[index];
-  if(!currentChapter)return;
-  const qs=questionsOf(currentChapter);
-  if(!qs.length){
-    showChapterModal(currentChapter,[]);
+
+
+/* =========================================================
+   总渲染入口
+========================================================= */
+
+function render(){
+
+  if(state.page === "home"){
+    renderHome();
     return;
   }
-  currentIndex=0;
-  $('list').classList.add('hidden');$('study').classList.remove('hidden');
-  renderItem();
-}
-function showChapterModal(c,qs){
-  $('modalTitle').textContent=c.name||c.title||'章节';
-  $('modalMeta').textContent=`${qs.length} 个回忆点`;
-  $('modalItems').innerHTML=qs.length?qs.map((q,i)=>`
-    <div class="item-card">
-      <div class="item-title">${i+1}. ${esc(qText(q).slice(0,80))}</div>
-      <div class="item-text">${esc(qAnswer(q))}</div>
-    </div>`).join(''):'<div class="empty">这个章节目前没有题目。</div>';
-  $('chapterModal').classList.remove('hidden');
-}
-function closeChapterModal(){$('chapterModal').classList.add('hidden')}
-function goChapterList(){$('study').classList.add('hidden');$('list').classList.remove('hidden');renderChapters()}
-function goHome(){$('study').classList.add('hidden');$('list').classList.add('hidden');$('home').classList.remove('hidden');updateHome()}
-function renderItem(){
-  const qs=questionsOf(currentChapter);
-  const q=qs[currentIndex];
-  $('studyCrumb').textContent=(currentBook.name||currentBook.subjectName||'')+' / '+(currentChapter.name||currentChapter.title||'');
-  $('studyTitle').textContent=`回忆点 ${currentIndex+1}`;
-  $('studyCount').textContent=qs.length;
-  $('itemBox').innerHTML=`
-    <div class="item-title">${esc(qText(q).slice(0,120))}</div>
-    <div class="hint" style="margin:10px 0">先合上书完整复述，再打开提示。</div>
-    <div id="kwPanel" class="panel hidden"><div class="panel-head">关键词 <span>提示</span></div><div class="panel-body">${esc(makeKeywords(qText(q)))}</div></div>
-    <div id="textPanel" class="panel hidden"><div class="panel-head">原文 <span>核对</span></div><div class="panel-body">${esc(qAnswer(q))}</div></div>
-    <div style="margin-top:16px;color:var(--muted);font-size:12px">当前记录：${scores[idFor(q)]?scores[idFor(q)]+' 分':'未评分'}</div>`;
-}
-function makeKeywords(t){
-  const stop=['建筑','我们','其中','主要','以及','可以','通过','进行','具有','这种','对于','因此','内容','特点','作用','需要','一个','问题'];
-  const words=[...(String(t).match(/[\u4e00-\u9fff]{2,8}/g)||[])].filter(x=>!stop.includes(x));
-  return [...new Set(words)].slice(0,12).join('　·　')||'暂无自动关键词';
-}
-function showKeywords(){$('kwPanel')?.classList.remove('hidden')}
-function showOriginal(){$('textPanel')?.classList.remove('hidden')}
-function score(n){
-  const qs=questionsOf(currentChapter),q=qs[currentIndex];
-  scores[idFor(q)]=n;save();
-  if(currentIndex<qs.length-1){currentIndex++;renderItem()}
-  else{goChapterList();renderChapters();updateHome()}
-}
-function nextItem(){const qs=questionsOf(currentChapter);if(currentIndex<qs.length-1){currentIndex++;renderItem()}}
-function prevItem(){if(currentIndex>0){currentIndex--;renderItem()}}
-function updateHome(){
-  const vals=Object.values(scores).filter(v=>[1,2,3].includes(v));
-  $('todayCount').textContent=vals.length;
-  $('mastery').textContent=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/3*100)+'%':'—';
-}
-function resetData(){if(confirm('清空本机所有 CHECKY 回忆记录？')){localStorage.removeItem(STORAGE);scores={};location.reload()}}
-async function loadData(){
-  try{
-    const r=await fetch(DATA_URL+'?v='+Date.now(),{cache:'no-store'});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    DATA=await r.json();
-    renderBooks();updateHome();
-  }catch(e){
-    console.error(e);
-    $('books').innerHTML=`<div class="empty">题库读取失败。<br>请确认 GitHub Actions 已成功生成 <b>data/checky-data.json</b>。</div>`;
+
+  if(state.page === "chapters"){
+    renderChapters();
+    return;
   }
+
+  if(state.page === "questions"){
+    renderQuestions();
+    return;
+  }
+
+  if(state.page === "study"){
+    renderStudy();
+    return;
+  }
+
 }
-loadData();
+
+
+/* =========================================================
+   首页：四大板块
+========================================================= */
+
+function renderHome(){
+
+  app.innerHTML =
+    header(
+      "CHECKY",
+      "主动回忆背书"
+    );
+
+
+  const list = books();
+
+
+  if(!list.length){
+
+    app.innerHTML += `
+      <div class="empty">
+
+        当前没有读取到书籍数据。
+
+        <br><br>
+
+        请确认：
+        <br>
+        data/checky-data.json
+        已经由 GitHub Actions 生成。
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  app.innerHTML += `
+
+    <div class="grid">
+
+      ${list.map((book,index) => {
+
+        return `
+
+          <button
+            class="card"
+            onclick="openBook(${index})"
+          >
+
+            <span class="arrow">
+              ›
+            </span>
+
+            <h2>
+              ${escapeHTML(bookName(book))}
+            </h2>
+
+            <div class="count">
+
+              ${chapters(book).length}
+              个章节
+
+              ·
+
+              ${totalQuestions(book)}
+              道题
+
+            </div>
+
+          </button>
+
+        `;
+
+      }).join("")}
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   板块 → 章节
+========================================================= */
+
+function renderChapters(){
+
+  const list = chapters(state.book);
+
+
+  app.innerHTML =
+    header(
+      bookName(state.book),
+      `${list.length} 个章节`
+    );
+
+
+  if(!list.length){
+
+    app.innerHTML += `
+      <div class="empty">
+
+        这个板块没有识别到章节。
+
+        <br><br>
+
+        如果原 DOCX 中确实有内容，
+        后面的 build_data.py 会负责处理。
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  app.innerHTML += `
+
+    <div class="list">
+
+      ${list.map((chapter,index) => {
+
+        const count =
+          questions(chapter).length;
+
+        return `
+
+          <button
+            class="row"
+            onclick="openChapter(${index})"
+          >
+
+            <span>
+
+              <strong>
+                ${escapeHTML(
+                  chapterName(chapter)
+                )}
+              </strong>
+
+              <br>
+
+              <small>
+                ${count} 道题
+              </small>
+
+            </span>
+
+            <b>›</b>
+
+          </button>
+
+        `;
+
+      }).join("")}
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   章节 → 题目列表
+========================================================= */
+
+function renderQuestions(){
+
+  const list =
+    questions(state.chapter);
+
+
+  app.innerHTML =
+    header(
+      chapterName(state.chapter),
+      `${list.length} 道题`
+    );
+
+
+  if(!list.length){
+
+    app.innerHTML += `
+
+      <div class="empty">
+
+        这一章目前没有生成题目。
+
+        <br><br>
+
+        如果原 DOCX 中有正文，
+        这通常是数据构建规则的问题，
+        不需要你重新整理 DOCX。
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  app.innerHTML += `
+
+    <div class="list">
+
+      ${list.map((q,index) => {
+
+        return `
+
+          <button
+            class="row"
+            onclick="openQuestion(${index})"
+          >
+
+            <span>
+
+              <strong>
+                第 ${index + 1} 题
+              </strong>
+
+              <br>
+
+              <small>
+                ${escapeHTML(
+                  questionText(q)
+                    .slice(0,80)
+                )}
+              </small>
+
+            </span>
+
+            <b>›</b>
+
+          </button>
+
+        `;
+
+      }).join("")}
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   真正的题目页面
+========================================================= */
+
+function renderStudy(){
+
+  const q =
+    state.questions[state.index];
+
+
+  if(!q){
+
+    state.page = "questions";
+
+    render();
+
+    return;
+  }
+
+
+  const questionID =
+    q.id ||
+    `${chapterId(state.chapter)}-${state.index}`;
+
+
+  const savedScore =
+    localStorage.getItem(
+      "checky-score-" + questionID
+    ) || "";
+
+
+  app.innerHTML =
+    header(
+      chapterName(state.chapter),
+      `第 ${state.index + 1} / ${state.questions.length} 题`
+    );
+
+
+  app.innerHTML += `
+
+    <div class="study">
+
+      <div class="crumb">
+
+        ${escapeHTML(
+          bookName(state.book)
+        )}
+
+        /
+
+        ${escapeHTML(
+          chapterName(state.chapter)
+        )}
+
+      </div>
+
+
+      <div class="qno">
+        主动回忆
+      </div>
+
+
+      <div class="question">
+
+        ${escapeHTML(
+          questionText(q)
+        )}
+
+      </div>
+
+
+      <div class="actions">
+
+        <button
+          onclick="togglePanel('keyword-panel')"
+        >
+          显示关键词
+        </button>
+
+
+        <button
+          onclick="togglePanel('answer-panel')"
+        >
+          显示答案
+        </button>
+
+
+        <button
+          class="alt"
+          onclick="
+            state.page='questions';
+            render();
+          "
+        >
+          题目列表
+        </button>
+
+      </div>
+
+
+      <div
+        id="keyword-panel"
+        class="panel keyword"
+        style="display:none"
+      >
+
+        <b>
+          关键词
+        </b>
+
+        <br>
+
+        ${escapeHTML(
+          keywordText(q) ||
+          "暂无关键词"
+        )}
+
+      </div>
+
+
+      <div
+        id="answer-panel"
+        class="panel answer"
+        style="display:none"
+      >
+
+        <b>
+          答案
+        </b>
+
+        <br>
+
+        ${escapeHTML(
+          answerText(q)
+        )}
+
+      </div>
+
+
+      <div class="score">
+
+        <button
+          class="${savedScore === "1" ? "active" : ""}"
+          onclick="saveScore(1)"
+        >
+          1 · 不熟
+        </button>
+
+
+        <button
+          class="${savedScore === "2" ? "active" : ""}"
+          onclick="saveScore(2)"
+        >
+          2 · 一般
+        </button>
+
+
+        <button
+          class="${savedScore === "3" ? "active" : ""}"
+          onclick="saveScore(3)"
+        >
+          3 · 熟练
+        </button>
+
+      </div>
+
+
+      <div class="nav">
+
+        <button
+          class="alt"
+          onclick="previousQuestion()"
+        >
+          ‹ 上一题
+        </button>
+
+
+        <button
+          onclick="nextQuestion()"
+        >
+          下一题 ›
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+}
+
+
+/* =========================================================
+   页面交互
+========================================================= */
+
+function openBook(index){
+
+  state.book =
+    books()[index];
+
+  state.page =
+    "chapters";
+
+  render();
+}
+
+
+function openChapter(index){
+
+  state.chapter =
+    chapters(state.book)[index];
+
+  state.page =
+    "questions";
+
+  render();
+}
+
+
+function openQuestion(index){
+
+  state.questions =
+    questions(state.chapter);
+
+  state.index =
+    index;
+
+  state.page =
+    "study";
+
+  render();
+}
+
+
+function previousQuestion(){
+
+  if(state.index > 0){
+
+    state.index--;
+
+    render();
+
+  }
+
+}
+
+
+function nextQuestion(){
+
+  if(
+    state.index <
+    state.questions.length - 1
+  ){
+
+    state.index++;
+
+    render();
+
+  }else{
+
+    alert(
+      "本章已经完成。"
+    );
+
+  }
+
+}
+
+
+function saveScore(score){
+
+  const q =
+    state.questions[state.index];
+
+  const id =
+    q.id ||
+    `${chapterId(state.chapter)}-${state.index}`;
+
+
+  localStorage.setItem(
+    "checky-score-" + id,
+    String(score)
+  );
+
+
+  render();
+}
+
+
+function togglePanel(id){
+
+  const panel =
+    document.getElementById(id);
+
+
+  if(!panel){
+    return;
+  }
+
+
+  panel.style.display =
+    panel.style.display === "none"
+      ? "block"
+      : "none";
+}
+
+
+function goBack(){
+
+  if(state.page === "study"){
+
+    state.page =
+      "questions";
+
+  }else if(state.page === "questions"){
+
+    state.page =
+      "chapters";
+
+  }else if(state.page === "chapters"){
+
+    state.page =
+      "home";
+
+  }
+
+
+  render();
+}
+
+
+/* =========================================================
+   读取 JSON
+========================================================= */
+
+async function init(){
+
+  try{
+
+    const response =
+      await fetch(
+        "./data/checky-data.json?ts=" +
+        Date.now(),
+        {
+          cache:"no-store"
+        }
+      );
+
+
+    if(!response.ok){
+
+      throw new Error(
+        "HTTP " +
+        response.status
+      );
+
+    }
+
+
+    DATA =
+      await response.json();
+
+
+    render();
+
+
+  }catch(error){
+
+    app.innerHTML =
+      header(
+        "CHECKY",
+        "数据加载失败"
+      );
+
+
+    app.innerHTML += `
+
+      <div class="empty">
+
+        无法读取：
+
+        <br><br>
+
+        <b>
+          data/checky-data.json
+        </b>
+
+        <br><br>
+
+        ${escapeHTML(
+          error.message
+        )}
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+init();
+
 </script>
+
 </body>
 </html>
