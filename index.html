@@ -46,7 +46,7 @@ header{display:flex;align-items:center;justify-content:space-between;margin-bott
 </section>
 </div>
 <div class="nav"><button class="active" id="nHome" onclick="goHome()">首页</button><button id="nStats" onclick="showStats()">统计</button></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
+
 <script>
 const PDFS=[
  {id:'history',name:'建筑历史',emoji:'📕',file:'01-《秋季必背册子·建筑历史》（朴是内部资料，请勿转发）.pdf'},
@@ -95,7 +95,19 @@ function updateHome(){let vals=Object.keys(scores).filter(k=>!k.endsWith('_time'
 function showStats(){let vals=Object.keys(scores).filter(k=>!k.endsWith('_time')).map(k=>scores[k]);alert(`CHECKY 统计\\n\\n总评分：${vals.length}\\n1 分：${vals.filter(x=>x===1).length}\\n2 分：${vals.filter(x=>x===2).length}\\n3 分：${vals.filter(x=>x===3).length}\\n平均掌握：${vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/3*100):0}%`)}
 function resetData(){if(confirm('清空本机所有 CHECKY 背诵记录？')){localStorage.removeItem(key);location.reload()}}
 renderBooks();updateHome();
-import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs').then(async pdfjs=>{pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';for(const b of PDFS) await loadPDF(pdfjs,b)}).catch(console.error);
+// PDF.js is loaded separately below; the interface remains usable even if PDF parsing fails.
+(function(){
+  const sc=document.createElement('script');
+  sc.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  sc.onload=async function(){
+    try{
+      pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      for(const b of PDFS) await loadPDF(pdfjsLib,b);
+    }catch(e){console.error(e)}
+  };
+  sc.onerror=function(){console.warn('PDF.js failed to load; UI remains available.')};
+  document.head.appendChild(sc);
+})();
 </script>
 </body>
 </html>
