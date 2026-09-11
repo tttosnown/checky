@@ -1,25 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CHECKY · 背书</title>
+<title>CHECKY</title>
 
 <style>
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 body{
   margin:0;
-  background:#f6f5f2;
+  background:#f6f6f4;
   color:#171717;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "PingFang SC",
-    "Microsoft YaHei",
-    sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
 }
 
 button{
@@ -27,56 +23,60 @@ button{
 }
 
 #app{
-  max-width:900px;
-  margin:auto;
-  padding:20px 15px 45px;
+  min-height:100vh;
 }
 
-.top{
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  height:64px;
+  background:#f6f6f4;
+  border-bottom:1px solid #e5e5e2;
   display:flex;
   align-items:center;
-  gap:12px;
-  margin-bottom:20px;
-}
-
-.back{
-  display:none;
-  border:0;
-  background:#111;
-  color:white;
-  border-radius:12px;
-  padding:9px 13px;
+  justify-content:space-between;
+  padding:0 16px;
 }
 
 .title{
-  font-size:25px;
-  font-weight:800;
+  font-size:20px;
+  font-weight:700;
 }
 
-.sub{
-  font-size:13px;
-  color:#777;
-  margin-top:3px;
+.close{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:50%;
+  background:#171717;
+  color:white;
+  font-size:24px;
+  line-height:40px;
+  padding:0;
+  cursor:pointer;
 }
 
-/* 首页四大板块 */
+main{
+  max-width:900px;
+  margin:auto;
+  padding:18px 16px 40px;
+}
 
 .grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:14px;
 }
 
 .card{
-  width:100%;
-  border:0;
   background:white;
-  cursor:pointer;
-  text-align:left;
-  box-shadow:0 3px 15px #0000000b;
-  border-radius:18px;
+  border:1px solid #e7e7e4;
+  border-radius:20px;
   padding:20px;
-  min-height:125px;
+  min-height:130px;
+  box-shadow:0 3px 14px rgba(0,0,0,.04);
+  cursor:pointer;
 }
 
 .card:active{
@@ -84,21 +84,15 @@ button{
 }
 
 .card h2{
-  margin:0 0 9px;
-  font-size:20px;
+  margin:0 0 10px;
+  font-size:18px;
 }
 
-.count{
-  font-size:13px;
+.card p{
+  margin:0;
   color:#777;
+  font-size:14px;
 }
-
-.arrow{
-  float:right;
-  font-size:24px;
-}
-
-/* 列表 */
 
 .list{
   display:flex;
@@ -106,115 +100,87 @@ button{
   gap:10px;
 }
 
-.row{
-  width:100%;
-  border:0;
+.item{
   background:white;
-  cursor:pointer;
-  text-align:left;
-  box-shadow:0 3px 15px #0000000b;
-  border-radius:15px;
-  padding:16px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.row:active{
-  transform:scale(.99);
-}
-
-.row strong{
-  font-size:16px;
-}
-
-.row small{
-  color:#888;
-  line-height:1.5;
-}
-
-/* 空状态 */
-
-.empty{
-  background:white;
+  border:1px solid #e7e7e4;
   border-radius:16px;
-  padding:22px;
-  color:#777;
-  line-height:1.8;
+  padding:16px;
+  cursor:pointer;
 }
 
-/* 题目页面 */
+.item-title{
+  font-weight:650;
+  line-height:1.55;
+}
+
+.item-meta{
+  color:#888;
+  font-size:13px;
+  margin-top:7px;
+}
 
 .study{
   background:white;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 3px 18px #0000000b;
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 3px 14px rgba(0,0,0,.04);
 }
 
-.crumb,
-.qno{
+.study-label{
   font-size:13px;
   color:#888;
+  margin-bottom:12px;
 }
 
 .question{
   font-size:22px;
-  font-weight:750;
-  line-height:1.6;
-  margin:12px 0 20px;
-  white-space:pre-wrap;
+  line-height:1.65;
+  font-weight:700;
+  margin-bottom:22px;
 }
 
-/* 操作按钮 */
-
-.actions,
-.score,
-.nav{
+.actions{
   display:flex;
-  gap:9px;
   flex-wrap:wrap;
+  gap:9px;
+  margin-bottom:18px;
 }
 
-.actions button,
-.nav button{
+.btn{
   border:0;
-  border-radius:12px;
-  background:#111;
-  color:white;
+  background:#171717;
+  color:#fff;
   padding:11px 15px;
+  border-radius:12px;
   cursor:pointer;
 }
 
-.actions .alt,
-.nav .alt{
-  background:#eee;
-  color:#222;
+.btn.secondary{
+  background:#ededeb;
+  color:#171717;
 }
 
-/* 答案 */
-
-.panel{
-  margin-top:12px;
-  padding:14px;
-  border-radius:14px;
-  line-height:1.7;
+.answer-box{
+  margin-top:15px;
+  padding:17px;
+  background:#f4f4f1;
+  border-radius:16px;
+  line-height:1.8;
   white-space:pre-wrap;
 }
 
-.keyword{
-  background:#fff3cf;
+.keyword-box{
+  margin-top:15px;
+  padding:15px;
+  background:#f8edf5;
+  border-radius:16px;
+  line-height:1.8;
 }
-
-.answer{
-  background:#edf7ee;
-}
-
-/* 熟练度 */
 
 .score{
-  margin-top:14px;
+  display:flex;
+  gap:8px;
+  margin-top:20px;
 }
 
 .score button{
@@ -222,39 +188,36 @@ button{
   border:1px solid #ddd;
   background:white;
   border-radius:12px;
-  padding:10px;
-  cursor:pointer;
+  padding:12px;
 }
-
-.score .active{
-  background:#111;
-  color:white;
-}
-
-/* 上下一题 */
 
 .nav{
-  margin-top:18px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:24px;
 }
 
 .nav button{
   flex:1;
 }
 
-/* 手机 */
+.error{
+  background:#fff0f0;
+  border:1px solid #f0bcbc;
+  padding:16px;
+  border-radius:15px;
+  line-height:1.7;
+}
+
+.loading{
+  color:#888;
+  padding:30px 0;
+}
 
 @media(max-width:600px){
-
-  #app{
-    padding:17px 13px 40px;
-  }
-
   .grid{
     grid-template-columns:1fr;
-  }
-
-  .card{
-    min-height:105px;
   }
 
   .question{
@@ -264,970 +227,313 @@ button{
 </style>
 </head>
 
-
 <body>
-
 <div id="app"></div>
 
-
 <script>
-
-/* =========================================================
-   CHECKY 数据与页面状态
-========================================================= */
-
-let DATA = null;
-
-let state = {
-  page:"home",
-  book:null,
-  chapter:null,
-  questions:[],
-  index:0
-};
-
 const app = document.getElementById("app");
 
+let DATA = null;
+let currentBook = null;
+let currentChapter = null;
+let currentQuestionIndex = 0;
 
-/* =========================================================
-   数据读取
-========================================================= */
+function esc(v){
+  return String(v ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
 
 function books(){
-
-  if(Array.isArray(DATA?.books)){
-    return DATA.books;
-  }
-
-  if(Array.isArray(DATA?.subjects)){
-    return DATA.subjects;
-  }
-
-  return [];
+  return DATA?.books || DATA?.subjects || [];
 }
-
-
-function bookName(book){
-
-  return (
-    book?.name ||
-    book?.title ||
-    book?.subjectName ||
-    book?.subject ||
-    "未命名板块"
-  );
-}
-
 
 function chapters(book){
-
-  /* 优先读取书自己携带的 chapters */
-
-  if(Array.isArray(book?.chapters)){
-    return book.chapters;
-  }
-
-  /* 如果章节放在全局 chapters 中 */
-
-  const id =
-    book?.id ||
-    book?.bookId ||
-    book?.subjectId;
-
-  if(Array.isArray(DATA?.chapters)){
-
-    return DATA.chapters.filter(chapter => {
-
-      return (
-        chapter.bookId == id ||
-        chapter.subjectId == id ||
-        chapter.parentId == id
-      );
-
-    });
-  }
-
-  return [];
+  return book?.chapters || [];
 }
-
-
-function chapterName(chapter){
-
-  return (
-    chapter?.name ||
-    chapter?.title ||
-    chapter?.chapterName ||
-    "未命名章节"
-  );
-}
-
-
-function chapterId(chapter){
-
-  return (
-    chapter?.id ||
-    chapter?.chapterId ||
-    chapter?._id
-  );
-}
-
-
-/* =========================================================
-   获取章节题目
-========================================================= */
 
 function questions(chapter){
-
-  /* 第一种：章节直接带 questions */
-
-  if(Array.isArray(chapter?.questions)){
-    return chapter.questions;
-  }
-
-
-  /* 第二种：questionList */
-
-  if(Array.isArray(chapter?.questionList)){
-    return chapter.questionList;
-  }
-
-
-  /* 第三种：章节只有 questionIds */
-
-  const ids = chapter?.questionIds || [];
-
-  if(
-    ids.length &&
-    Array.isArray(DATA?.questions)
-  ){
-
-    return ids
-      .map(id => {
-
-        return DATA.questions.find(q => {
-
-          return (
-            q.id == id ||
-            q.questionId == id
-          );
-
-        });
-
-      })
-      .filter(Boolean);
-  }
-
-
-  /* 第四种：从全局 questions 根据 chapterId 查 */
-
-  const id = chapterId(chapter);
-  const name = chapterName(chapter);
-
-  if(Array.isArray(DATA?.questions)){
-
-    return DATA.questions.filter(q => {
-
-      return (
-        q.chapterId == id ||
-        q.chapter == id ||
-        q.chapterName == name ||
-        q.chapter == name
-      );
-
-    });
-
-  }
-
-  return [];
+  return chapter?.questions || [];
 }
 
-
-/* =========================================================
-   题目字段兼容
-========================================================= */
-
-function questionText(q){
-
-  return (
-    q?.question ||
-    q?.prompt ||
-    q?.title ||
-    q?.text ||
-    q?.content ||
-    "（题目为空）"
-  );
-}
-
-
-function answerText(q){
-
-  return (
-    q?.answer ||
-    q?.original ||
-    q?.explanation ||
-    q?.content ||
-    "暂无答案"
-  );
-}
-
-
-function keywordText(q){
-
-  return (
-    q?.keyword ||
-    q?.keywords ||
-    q?.points ||
-    ""
-  );
-}
-
-
-/* =========================================================
-   HTML 转义
-========================================================= */
-
-function escapeHTML(value){
-
-  return String(value ?? "")
-    .replace(/[&<>"]/g, char => {
-
-      return {
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;"
-      }[char];
-
-    });
-}
-
-
-/* =========================================================
-   统计
-========================================================= */
-
-function totalQuestions(book){
-
-  return chapters(book)
-    .reduce(
-      (total, chapter) =>
-        total + questions(chapter).length,
-      0
-    );
-}
-
-
-/* =========================================================
-   顶部
-========================================================= */
-
-function header(title, subtitle){
-
+function header(title, showClose=true){
   return `
-    <div class="top">
-
-      <button
-        id="back"
-        class="back"
-        onclick="goBack()"
-      >
-        ← 返回
-      </button>
-
-      <div>
-
-        <div class="title">
-          ${escapeHTML(title)}
-        </div>
-
-        <div class="sub">
-          ${escapeHTML(subtitle || "")}
-        </div>
-
-      </div>
-
+    <div class="topbar">
+      <div class="title">${esc(title)}</div>
+      ${showClose ? `<button class="close" onclick="goBack()">×</button>` : ""}
     </div>
   `;
 }
 
+function home(){
+  currentBook = null;
+  currentChapter = null;
 
-/* =========================================================
-   总渲染入口
-========================================================= */
-
-function render(){
-
-  if(state.page === "home"){
-    renderHome();
-    return;
-  }
-
-  if(state.page === "chapters"){
-    renderChapters();
-    return;
-  }
-
-  if(state.page === "questions"){
-    renderQuestions();
-    return;
-  }
-
-  if(state.page === "study"){
-    renderStudy();
-    return;
-  }
-
+  app.innerHTML = `
+    ${header("CHECKY",false)}
+    <main>
+      <div class="grid">
+        ${books().map(book => `
+          <div class="card" onclick="openBook('${esc(book.id)}')">
+            <h2>${esc(book.name || book.title)}</h2>
+            <p>
+              ${book.chapterCount ?? chapters(book).length} 个章节
+              · ${book.questionCount ?? questionsCount(book)} 个题目
+            </p>
+          </div>
+        `).join("")}
+      </div>
+    </main>
+  `;
 }
 
+function questionsCount(book){
+  return chapters(book).reduce((n,c)=>{
+    return n + questions(c).length;
+  },0);
+}
 
-/* =========================================================
-   首页：四大板块
-========================================================= */
+function openBook(id){
+  currentBook = books().find(b=>b.id===id);
+  if(!currentBook) return;
 
-function renderHome(){
+  currentChapter = null;
 
-  app.innerHTML =
-    header(
-      "CHECKY",
-      "主动回忆背书"
-    );
-
-
-  const list = books();
-
-
-  if(!list.length){
-
-    app.innerHTML += `
-      <div class="empty">
-
-        当前没有读取到书籍数据。
-
-        <br><br>
-
-        请确认：
-        <br>
-        data/checky-data.json
-        已经由 GitHub Actions 生成。
-
-      </div>
-    `;
-
-    return;
-  }
-
-
-  app.innerHTML += `
-
-    <div class="grid">
-
-      ${list.map((book,index) => {
-
-        return `
-
-          <button
-            class="card"
-            onclick="openBook(${index})"
-          >
-
-            <span class="arrow">
-              ›
-            </span>
-
-            <h2>
-              ${escapeHTML(bookName(book))}
-            </h2>
-
-            <div class="count">
-
-              ${chapters(book).length}
-              个章节
-
-              ·
-
-              ${totalQuestions(book)}
-              道题
-
+  app.innerHTML = `
+    ${header(currentBook.name || currentBook.title)}
+    <main>
+      <div class="list">
+        ${chapters(currentBook).map((chapter,i)=>`
+          <div class="item" onclick="openChapter(${i})">
+            <div class="item-title">${esc(chapter.name || chapter.title || "第"+(i+1)+"章")}</div>
+            <div class="item-meta">
+              ${chapter.questionCount ?? questions(chapter).length} 题
             </div>
-
-          </button>
-
-        `;
-
-      }).join("")}
-
-    </div>
+          </div>
+        `).join("")}
+      </div>
+    </main>
   `;
 }
-
-
-/* =========================================================
-   板块 → 章节
-========================================================= */
-
-function renderChapters(){
-
-  const list = chapters(state.book);
-
-
-  app.innerHTML =
-    header(
-      bookName(state.book),
-      `${list.length} 个章节`
-    );
-
-
-  if(!list.length){
-
-    app.innerHTML += `
-      <div class="empty">
-
-        这个板块没有识别到章节。
-
-        <br><br>
-
-        如果原 DOCX 中确实有内容，
-        后面的 build_data.py 会负责处理。
-
-      </div>
-    `;
-
-    return;
-  }
-
-
-  app.innerHTML += `
-
-    <div class="list">
-
-      ${list.map((chapter,index) => {
-
-        const count =
-          questions(chapter).length;
-
-        return `
-
-          <button
-            class="row"
-            onclick="openChapter(${index})"
-          >
-
-            <span>
-
-              <strong>
-                ${escapeHTML(
-                  chapterName(chapter)
-                )}
-              </strong>
-
-              <br>
-
-              <small>
-                ${count} 道题
-              </small>
-
-            </span>
-
-            <b>›</b>
-
-          </button>
-
-        `;
-
-      }).join("")}
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   章节 → 题目列表
-========================================================= */
-
-function renderQuestions(){
-
-  const list =
-    questions(state.chapter);
-
-
-  app.innerHTML =
-    header(
-      chapterName(state.chapter),
-      `${list.length} 道题`
-    );
-
-
-  if(!list.length){
-
-    app.innerHTML += `
-
-      <div class="empty">
-
-        这一章目前没有生成题目。
-
-        <br><br>
-
-        如果原 DOCX 中有正文，
-        这通常是数据构建规则的问题，
-        不需要你重新整理 DOCX。
-
-      </div>
-
-    `;
-
-    return;
-  }
-
-
-  app.innerHTML += `
-
-    <div class="list">
-
-      ${list.map((q,index) => {
-
-        return `
-
-          <button
-            class="row"
-            onclick="openQuestion(${index})"
-          >
-
-            <span>
-
-              <strong>
-                第 ${index + 1} 题
-              </strong>
-
-              <br>
-
-              <small>
-                ${escapeHTML(
-                  questionText(q)
-                    .slice(0,80)
-                )}
-              </small>
-
-            </span>
-
-            <b>›</b>
-
-          </button>
-
-        `;
-
-      }).join("")}
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   真正的题目页面
-========================================================= */
-
-function renderStudy(){
-
-  const q =
-    state.questions[state.index];
-
-
-  if(!q){
-
-    state.page = "questions";
-
-    render();
-
-    return;
-  }
-
-
-  const questionID =
-    q.id ||
-    `${chapterId(state.chapter)}-${state.index}`;
-
-
-  const savedScore =
-    localStorage.getItem(
-      "checky-score-" + questionID
-    ) || "";
-
-
-  app.innerHTML =
-    header(
-      chapterName(state.chapter),
-      `第 ${state.index + 1} / ${state.questions.length} 题`
-    );
-
-
-  app.innerHTML += `
-
-    <div class="study">
-
-      <div class="crumb">
-
-        ${escapeHTML(
-          bookName(state.book)
-        )}
-
-        /
-
-        ${escapeHTML(
-          chapterName(state.chapter)
-        )}
-
-      </div>
-
-
-      <div class="qno">
-        主动回忆
-      </div>
-
-
-      <div class="question">
-
-        ${escapeHTML(
-          questionText(q)
-        )}
-
-      </div>
-
-
-      <div class="actions">
-
-        <button
-          onclick="togglePanel('keyword-panel')"
-        >
-          显示关键词
-        </button>
-
-
-        <button
-          onclick="togglePanel('answer-panel')"
-        >
-          显示答案
-        </button>
-
-
-        <button
-          class="alt"
-          onclick="
-            state.page='questions';
-            render();
-          "
-        >
-          题目列表
-        </button>
-
-      </div>
-
-
-      <div
-        id="keyword-panel"
-        class="panel keyword"
-        style="display:none"
-      >
-
-        <b>
-          关键词
-        </b>
-
-        <br>
-
-        ${escapeHTML(
-          keywordText(q) ||
-          "暂无关键词"
-        )}
-
-      </div>
-
-
-      <div
-        id="answer-panel"
-        class="panel answer"
-        style="display:none"
-      >
-
-        <b>
-          答案
-        </b>
-
-        <br>
-
-        ${escapeHTML(
-          answerText(q)
-        )}
-
-      </div>
-
-
-      <div class="score">
-
-        <button
-          class="${savedScore === "1" ? "active" : ""}"
-          onclick="saveScore(1)"
-        >
-          1 · 不熟
-        </button>
-
-
-        <button
-          class="${savedScore === "2" ? "active" : ""}"
-          onclick="saveScore(2)"
-        >
-          2 · 一般
-        </button>
-
-
-        <button
-          class="${savedScore === "3" ? "active" : ""}"
-          onclick="saveScore(3)"
-        >
-          3 · 熟练
-        </button>
-
-      </div>
-
-
-      <div class="nav">
-
-        <button
-          class="alt"
-          onclick="previousQuestion()"
-        >
-          ‹ 上一题
-        </button>
-
-
-        <button
-          onclick="nextQuestion()"
-        >
-          下一题 ›
-        </button>
-
-      </div>
-
-    </div>
-
-  `;
-}
-
-
-/* =========================================================
-   页面交互
-========================================================= */
-
-function openBook(index){
-
-  state.book =
-    books()[index];
-
-  state.page =
-    "chapters";
-
-  render();
-}
-
 
 function openChapter(index){
+  currentChapter = chapters(currentBook)[index];
+  currentQuestionIndex = 0;
 
-  state.chapter =
-    chapters(state.book)[index];
+  const qs = questions(currentChapter);
 
-  state.page =
-    "questions";
-
-  render();
+  app.innerHTML = `
+    ${header(currentChapter.name || currentChapter.title)}
+    <main>
+      ${
+        qs.length
+        ?
+        `<div class="list">
+          ${qs.map((q,i)=>`
+            <div class="item" onclick="openQuestion(${i})">
+              <div class="item-title">
+                第 ${i+1} 题
+              </div>
+              <div class="item-meta">
+                ${esc(q.shortTitle || "主动回忆题")}
+              </div>
+            </div>
+          `).join("")}
+        </div>`
+        :
+        `<div class="error">这个章节目前没有生成题目。</div>`
+      }
+    </main>
+  `;
 }
-
 
 function openQuestion(index){
-
-  state.questions =
-    questions(state.chapter);
-
-  state.index =
-    index;
-
-  state.page =
-    "study";
-
-  render();
+  currentQuestionIndex = index;
+  renderQuestion();
 }
 
+function renderQuestion(){
+  const qs = questions(currentChapter);
 
-function previousQuestion(){
+  if(!qs.length) return;
 
-  if(state.index > 0){
+  const q = qs[currentQuestionIndex];
 
-    state.index--;
+  app.innerHTML = `
+    ${header("主动回忆")}
+    <main>
+      <div class="study">
 
-    render();
+        <div class="study-label">
+          ${esc(currentBook.name || currentBook.title)}
+          ·
+          ${esc(currentChapter.name || currentChapter.title)}
+          ·
+          ${currentQuestionIndex+1}/${qs.length}
+        </div>
 
+        <div class="question">
+          ${esc(q.question)}
+        </div>
+
+        <div class="actions">
+          <button class="btn secondary" onclick="toggleKeyword()">
+            显示关键词
+          </button>
+
+          <button class="btn secondary" onclick="toggleAnswer()">
+            显示答案
+          </button>
+        </div>
+
+        <div id="keyword" style="display:none"></div>
+        <div id="answer" style="display:none"></div>
+
+        <div class="score">
+          <button onclick="score(1)">★ 不熟</button>
+          <button onclick="score(2)">★★ 一般</button>
+          <button onclick="score(3)">★★★ 熟练</button>
+        </div>
+
+        <div class="nav">
+          <button class="btn secondary"
+            onclick="prevQuestion()"
+            ${currentQuestionIndex===0 ? "disabled" : ""}>
+            ‹ 上一题
+          </button>
+
+          <button class="btn"
+            onclick="nextQuestion()"
+            ${currentQuestionIndex===qs.length-1 ? "disabled" : ""}>
+            下一题 ›
+          </button>
+        </div>
+
+      </div>
+    </main>
+  `;
+}
+
+function toggleKeyword(){
+  const box = document.getElementById("keyword");
+  const q = questions(currentChapter)[currentQuestionIndex];
+
+  if(box.style.display==="none"){
+    box.style.display="block";
+    box.innerHTML = `
+      <div class="keyword-box">
+        <strong>关键词</strong><br>
+        ${esc(q.keyword || "暂无关键词")}
+      </div>
+    `;
+  }else{
+    box.style.display="none";
   }
-
 }
 
+function toggleAnswer(){
+  const box = document.getElementById("answer");
+  const q = questions(currentChapter)[currentQuestionIndex];
+
+  if(box.style.display==="none"){
+    box.style.display="block";
+    box.innerHTML = `
+      <div class="answer-box">
+        <strong>答案</strong><br>
+        ${esc(q.answer || q.content || "暂无答案")}
+      </div>
+    `;
+  }else{
+    box.style.display="none";
+  }
+}
+
+function prevQuestion(){
+  if(currentQuestionIndex>0){
+    currentQuestionIndex--;
+    renderQuestion();
+  }
+}
 
 function nextQuestion(){
+  const qs = questions(currentChapter);
 
-  if(
-    state.index <
-    state.questions.length - 1
-  ){
-
-    state.index++;
-
-    render();
-
-  }else{
-
-    alert(
-      "本章已经完成。"
-    );
-
+  if(currentQuestionIndex<qs.length-1){
+    currentQuestionIndex++;
+    renderQuestion();
   }
-
 }
 
+function score(value){
+  const q = questions(currentChapter)[currentQuestionIndex];
 
-function saveScore(score){
+  q.lastScore = value;
 
-  const q =
-    state.questions[state.index];
-
-  const id =
-    q.id ||
-    `${chapterId(state.chapter)}-${state.index}`;
-
-
-  localStorage.setItem(
-    "checky-score-" + id,
-    String(score)
-  );
-
-
-  render();
+  try{
+    const key = "checky_scores";
+    const saved = JSON.parse(localStorage.getItem(key) || "{}");
+    saved[q.id] = {
+      score:value,
+      time:Date.now()
+    };
+    localStorage.setItem(key,JSON.stringify(saved));
+  }catch(e){}
 }
 
-
-function togglePanel(id){
-
-  const panel =
-    document.getElementById(id);
-
-
-  if(!panel){
+function goBack(){
+  if(currentQuestionIndex !== null && currentChapter){
+    currentQuestionIndex = 0;
+    openChapter(
+      chapters(currentBook).indexOf(currentChapter)
+    );
     return;
   }
 
-
-  panel.style.display =
-    panel.style.display === "none"
-      ? "block"
-      : "none";
-}
-
-
-function goBack(){
-
-  if(state.page === "study"){
-
-    state.page =
-      "questions";
-
-  }else if(state.page === "questions"){
-
-    state.page =
-      "chapters";
-
-  }else if(state.page === "chapters"){
-
-    state.page =
-      "home";
-
+  if(currentBook){
+    home();
+    return;
   }
 
-
-  render();
+  home();
 }
 
-
-/* =========================================================
-   读取 JSON
-========================================================= */
-
-async function init(){
+async function load(){
+  app.innerHTML = `
+    ${header("CHECKY",false)}
+    <main>
+      <div class="loading">正在加载题库……</div>
+    </main>
+  `;
 
   try{
-
-    const response =
-      await fetch(
-        "./data/checky-data.json?ts=" +
-        Date.now(),
-        {
-          cache:"no-store"
-        }
-      );
-
+    const response = await fetch(
+      "./data/checky-data.json?ts="+Date.now(),
+      {cache:"no-store"}
+    );
 
     if(!response.ok){
-
-      throw new Error(
-        "HTTP " +
-        response.status
-      );
-
+      throw new Error("题库文件加载失败："+response.status);
     }
 
+    DATA = await response.json();
 
-    DATA =
-      await response.json();
-
-
-    render();
-
-
+    home();
   }catch(error){
-
-    app.innerHTML =
-      header(
-        "CHECKY",
-        "数据加载失败"
-      );
-
-
-    app.innerHTML += `
-
-      <div class="empty">
-
-        无法读取：
-
-        <br><br>
-
-        <b>
-          data/checky-data.json
-        </b>
-
-        <br><br>
-
-        ${escapeHTML(
-          error.message
-        )}
-
-      </div>
-
+    app.innerHTML = `
+      ${header("CHECKY",false)}
+      <main>
+        <div class="error">
+          <strong>题库加载失败</strong><br><br>
+          ${esc(error.message)}
+        </div>
+      </main>
     `;
-
   }
-
 }
 
-
-init();
-
+load();
 </script>
-
 </body>
 </html>
