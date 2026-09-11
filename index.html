@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f3ee">
+<title>CHECKY · 背书</title>
+<style>
+:root{--bg:#f7f3ee;--card:#fffdf9;--ink:#242321;--muted:#8b8780;--line:#e9e3db;--accent:#7d6b5b;--soft:#eee8df}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif}
+button{font:inherit;border:0;cursor:pointer} .app{max-width:760px;margin:auto;min-height:100vh;padding:24px 18px 100px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.brand{font-size:27px;font-weight:800;letter-spacing:.02em}.sub{font-size:12px;color:var(--muted);margin-top:3px}
+.iconbtn{width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:25px;padding:24px;margin-bottom:18px}.hero h1{margin:0 0 7px;font-size:28px}.hero p{margin:0;color:var(--muted);line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}.stat{background:var(--soft);border-radius:18px;padding:16px}.stat b{font-size:24px}.stat span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.section-title{font-size:15px;font-weight:800;margin:25px 2px 10px}.book{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);padding:17px;border-radius:20px;margin:10px 0;text-align:left;width:100%}.book .emoji{font-size:26px}.book strong{font-size:16px}.book small{display:block;color:var(--muted);margin-top:4px}
+.hidden{display:none}.back{background:none;color:var(--muted);padding:4px 0;margin-bottom:12px}.crumb{color:var(--muted);font-size:13px}.chapter{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:9px 0}.chapter button{background:none;width:100%;text-align:left}.chapter-title{font-weight:750}.chapter-meta{font-size:12px;color:var(--muted);margin-top:5px}
+.progress{height:6px;background:#e8e2da;border-radius:99px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;background:#7d6b5b;width:0}
+.study{text-align:center}.study h2{font-size:27px;margin:16px 0 8px}.hint{color:var(--muted);font-size:13px}.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;margin-top:18px;text-align:left;overflow:hidden}.panel-head{padding:16px 18px;font-weight:750;display:flex;justify-content:space-between}.panel-body{padding:0 18px 18px;line-height:1.9;white-space:pre-wrap}.reveal{margin-top:14px;width:100%;padding:13px;border-radius:15px;background:var(--soft);color:var(--ink)}.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.score{padding:15px 8px;border-radius:17px;background:var(--card);border:1px solid var(--line);font-weight:750}.score small{display:block;color:var(--muted);font-weight:400;margin-top:3px}.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(247,243,238,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:10px max(18px,calc((100% - 760px)/2 + 18px));display:flex;gap:8px}.nav button{flex:1;background:transparent;color:var(--muted);padding:9px;border-radius:13px}.nav button.active{background:var(--ink);color:white}
+.notice{padding:13px 15px;background:#fff8e8;border:1px solid #eadfbe;border-radius:15px;color:#6e6042;font-size:12px;line-height:1.6;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><div class="brand">CHECKY</div><div class="sub">主动回忆 · 关键词提示 · 掌握追踪</div></div><button class="iconbtn" onclick="resetData()">↺</button></header>
+
+<section id="home">
+<div class="hero"><h1>今天，先想起来。</h1><p>不要直接看答案。先复述 → 再看关键词 → 仍想不起时展开原文 → 最后给自己打 1 / 2 / 3 分。</p>
+<div class="grid"><div class="stat"><b id="todayCount">0</b><span>今日复习</span></div><div class="stat"><b id="mastery">—</b><span>平均掌握</span></div></div></div>
+<div class="section-title">三本资料</div>
+<div id="books"></div>
+<div class="notice">第一版会直接读取仓库中的 PDF。首次打开时需要等待浏览器提取文字；如果 PDF 很大，第一次加载可能需要一点时间。</div>
+</section>
+
+<section id="list" class="hidden">
+<button class="back" onclick="goHome()">‹ 返回</button><div class="crumb" id="listCrumb"></div><h1 id="listTitle"></h1><div id="chapters"></div>
+</section>
+
+<section id="study" class="hidden study">
+<button class="back" onclick="goList()">‹ 返回章节</button><div class="crumb" id="studyCrumb"></div><h2 id="studyTitle"></h2><div class="hint">合上书，先完整复述。不要急着看提示。</div>
+<div id="keywordPanel" class="panel hidden"><div class="panel-head">关键词 <span>提示</span></div><div id="keywords" class="panel-body"></div></div>
+<button class="reveal" id="kwBtn" onclick="showKeywords()">显示关键词</button>
+<button class="reveal" id="textBtn" onclick="showOriginal()">还是想不起来 → 展开原文</button>
+<div id="originalPanel" class="panel hidden"><div class="panel-head">原文 <span>核对</span></div><div id="original" class="panel-body"></div></div>
+<div class="scores"><button class="score" onclick="score(1)">1 分<small>基本不会</small></button><button class="score" onclick="score(2)">2 分<small>有印象 / 需提示</small></button><button class="score" onclick="score(3)">3 分<small>基本完整</small></button></div>
+</section>
+</div>
+<div class="nav"><button class="active" id="nHome" onclick="goHome()">首页</button><button id="nStats" onclick="showStats()">统计</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
+<script>
+const PDFS=[
+ {id:'history',name:'建筑历史',emoji:'📕',file:'01-《秋季必背册子·建筑历史》（朴是内部资料，请勿转发）.pdf'},
+ {id:'urban',name:'城市设计',emoji:'📗',file:'02-《秋季必背册子·城市设计》（朴是内部资料，请勿转发）.pdf'},
+ {id:'construction',name:'建筑构造',emoji:'📘',file:'03-《秋季必背册子·建筑构造》（朴是内部资料，请勿转发）.pdf'}
+];
+let DATA={}, currentBook=null,currentChapter=null,currentIndex=0;
+const key='checky-v1-scores';
+const scores=JSON.parse(localStorage.getItem(key)||'{}');
+function save(){localStorage.setItem(key,JSON.stringify(scores))}
+function $(id){return document.getElementById(id)}
+function esc(s){return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}
+function renderBooks(){
+ $('books').innerHTML=PDFS.map(b=>`<button class="book" onclick="openBook('${b.id}')"><div class="emoji">${b.emoji}</div><div><strong>${b.name}</strong><small>${DATA[b.id]?DATA[b.id].length+' 个识别到的章节':'等待读取 PDF'}</small></div></button>`).join('')
+}
+async function loadPDF(pdfjs,b){
+ try{
+   const pdf=await pdfjs.getDocument(encodeURI(b.file)).promise; let lines=[];
+   for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p);const c=await page.getTextContent();lines.push(...c.items.map(x=>x.str.trim()).filter(Boolean))}
+   DATA[b.id]=parseLines(lines); renderBooks();
+ }catch(e){console.warn(b.name,e);DATA[b.id]=[{title:'PDF 暂未能自动解析',items:[{title:'请确认 PDF 与 index.html 位于同一仓库目录',text:'浏览器无法读取该 PDF。可在后续版本改成预生成 JSON 数据。'}]}];renderBooks()}
+}
+function parseLines(lines){
+ let chapters=[],cur=null,item=null;
+ const heading=s=>s.length>1&&s.length<60&&!/[。！？；，]$/.test(s)&&(/^(第[一二三四五六七八九十百]+[章节部分篇]|[一二三四五六七八九十百]+[、.．]|[（(][一二三四五六七八九十]+[）)]|[A-Z一-]+[、.．])/.test(s));
+ for(const l of lines){
+   if(heading(l)){ if(cur) {if(item)cur.items.push(item);chapters.push(cur)};cur={title:l,items:[]};item=null}
+   else if(cur && l){if(!item)item={title:l,text:''};else item.text+=(item.text?'\\n':'')+l}
+ }
+ if(cur){if(item)cur.items.push(item);chapters.push(cur)}
+ return chapters.length?chapters:[{title:'全部内容',items:lines.slice(0,50).map(x=>({title:x,text:x}))}]
+}
+function openBook(id){currentBook=PDFS.find(x=>x.id===id);$('home').classList.add('hidden');$('list').classList.remove('hidden');$('study').classList.add('hidden');$('listCrumb').textContent=currentBook.name;$('listTitle').textContent='选择章节';renderChapters()}
+function renderChapters(){const d=DATA[currentBook.id]||[];$('chapters').innerHTML=d.map((c,i)=>`<div class="chapter"><button onclick="openChapter(${i})"><div class="chapter-title">${esc(c.title)}</div><div class="chapter-meta">${c.items.length} 个可背知识点</div><div class="progress"><i style="width:${chapterProgress(c)}%"></i></div></button></div>`).join('')}
+function chapterProgress(c){let a=c.items.map((x,i)=>scores[idFor(currentBook.id,c.title,i)]).filter(Boolean);return a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length/3*100):0}
+function openChapter(i){currentChapter=DATA[currentBook.id][i];currentIndex=0;showItem()}
+function idFor(b,c,i){return b+'|'+c+'|'+i}
+function showItem(){const it=currentChapter.items[currentIndex];$('list').classList.add('hidden');$('study').classList.remove('hidden');$('studyCrumb').textContent=currentBook.name+' / '+currentChapter.title;$('studyTitle').textContent=it.title||'知识点';$('keywords').textContent=makeKeywords(it.text||it.title);$('original').textContent=it.text||it.title;$('keywordPanel').classList.add('hidden');$('originalPanel').classList.add('hidden');$('kwBtn').style.display='block';$('textBtn').style.display='block'}
+function makeKeywords(t){return [...new Set((t.match(/[\u4e00-\u9fff]{2,8}/g)||[]).filter(x=>!['建筑','我们','其中','主要','以及','可以','通过','进行','具有','这种','对于','因此','内容','特点','作用'].includes(x)))].slice(0,12).join('　·　')||'暂无自动关键词'}
+function showKeywords(){$('keywordPanel').classList.remove('hidden');$('kwBtn').style.display='none'}
+function showOriginal(){$('originalPanel').classList.remove('hidden');$('textBtn').style.display='none'}
+function score(n){const id=idFor(currentBook.id,currentChapter.title,currentIndex);scores[id]=n;scores[id+'_time']=new Date().toISOString();save();if(currentIndex<currentChapter.items.length-1){currentIndex++;showItem()}else{goList();renderChapters();updateHome()}}
+function goList(){$('study').classList.add('hidden');$('list').classList.remove('hidden');renderChapters()}
+function goHome(){$('study').classList.add('hidden');$('list').classList.add('hidden');$('home').classList.remove('hidden');updateHome()}
+function updateHome(){let vals=Object.keys(scores).filter(k=>!k.endsWith('_time')).map(k=>scores[k]);$('todayCount').textContent=vals.length;$('mastery').textContent=vals.length?(Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/3*100)+'%'):'—'}
+function showStats(){let vals=Object.keys(scores).filter(k=>!k.endsWith('_time')).map(k=>scores[k]);alert(`CHECKY 统计\\n\\n总评分：${vals.length}\\n1 分：${vals.filter(x=>x===1).length}\\n2 分：${vals.filter(x=>x===2).length}\\n3 分：${vals.filter(x=>x===3).length}\\n平均掌握：${vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length/3*100):0}%`)}
+function resetData(){if(confirm('清空本机所有 CHECKY 背诵记录？')){localStorage.removeItem(key);location.reload()}}
+renderBooks();updateHome();
+import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs').then(async pdfjs=>{pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs';for(const b of PDFS) await loadPDF(pdfjs,b)}).catch(console.error);
+</script>
+</body>
+</html>
